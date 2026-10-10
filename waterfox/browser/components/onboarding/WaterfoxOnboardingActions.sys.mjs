@@ -2,22 +2,17 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
+
+/* This file is not finished at All we need to get rid of more stuff here */
 import { WaterfoxBrowserStyle } from "resource:///modules/WaterfoxBrowserStyle.sys.mjs";
 import { WaterfoxThemeColors } from "resource:///modules/WaterfoxThemeColors.sys.mjs";
 
 const lazy = {};
 
 ChromeUtils.defineESModuleGetters(lazy, {
-  AddonManager: "resource://gre/modules/AddonManager.sys.mjs",
   SearchService: "moz-src:///toolkit/components/search/SearchService.sys.mjs",
-  WaterfoxBlockerUtils: "resource:///modules/WaterfoxBlockerUtils.sys.mjs",
 });
 
-const BLOCKER_PREF = "waterfox.blocker.enabled";
-const BLOCKER_UI_PREF = "waterfox.blocker.ui.enabled";
-const BLOCKER_DISMISSED_PREF = "waterfox.blocker.extensionDetectionDismissed";
-
-// Lepton modes: 0/1 load the Waterfox chrome customisations, 2 turns them off.
 const TREE_TABS_PREF = "browser.tabs.verticalTabs.tree.enabled";
 const VERTICAL_TABS_PREF = "sidebar.verticalTabs";
 const TABBAR_POSITION_PREF = "browser.tabs.toolbarposition";
@@ -29,8 +24,6 @@ const UIDENSITY = {
   touch: 2,
 };
 
-// The tab strip positions the Settings tabs pane exposes. They only affect the
-// horizontal strip, so vertical and tree layouts ignore the stored value.
 const TAB_LOCATIONS = new Set([
   "topabove",
   "topbelow",
@@ -61,7 +54,6 @@ function setLayout(layout) {
       Services.prefs.setBoolPref(TREE_TABS_PREF, false);
       break;
     case "tree":
-      // The tree only renders in vertical mode, so turn both on together.
       Services.prefs.setBoolPref(VERTICAL_TABS_PREF, true);
       Services.prefs.setBoolPref(TREE_TABS_PREF, true);
       break;
@@ -82,31 +74,10 @@ function setUiDensity(density) {
   Services.prefs.setIntPref(UIDENSITY_PREF, UIDENSITY[density]);
 }
 
-function keepPrivacyDefaults() {
-  Services.prefs.setBoolPref(BLOCKER_PREF, true);
-}
-
-// Both blocker choices count as answering the extension detection prompt, so
-// the detector does not ask again through its own flow.
-async function useBuiltInBlocker() {
-  const addons = await lazy.AddonManager.getAddonsByTypes(["extension"]);
-  for (const addon of addons) {
-    if (lazy.WaterfoxBlockerUtils.isEnabledAdblockAddon(addon)) {
-      await addon.disable();
-    }
-  }
-  Services.prefs.setBoolPref(BLOCKER_PREF, true);
-  Services.prefs.setBoolPref(BLOCKER_UI_PREF, true);
-  Services.prefs.setBoolPref(BLOCKER_DISMISSED_PREF, true);
-}
-
-function keepAdblockExtension() {
-  Services.prefs.setBoolPref(BLOCKER_PREF, false);
-  Services.prefs.setBoolPref(BLOCKER_DISMISSED_PREF, true);
-}
-
-async function setDefaultSearchQwant() {
-  const engine = lazy.SearchService.getEngineById("qwant");
+async function setDefaultSearchDuckDuckGo() {
+  const engine =
+    lazy.SearchService.getEngineById("ddg") ||
+    lazy.SearchService.getEngineByName("DuckDuckGo");
   if (!engine || engine.hidden) {
     return;
   }
@@ -137,17 +108,9 @@ export const WaterfoxOnboardingActions = {
       case "density":
         setUiDensity(data.value);
         break;
-      case "privacy-defaults":
-        keepPrivacyDefaults();
-        break;
-      case "blocker-builtin":
-        await useBuiltInBlocker();
-        break;
-      case "blocker-keep":
-        keepAdblockExtension();
-        break;
+      case "search-duckduckgo":
       case "search-qwant":
-        await setDefaultSearchQwant();
+        await setDefaultSearchDuckDuckGo();
         break;
     }
   },
@@ -158,8 +121,5 @@ export const WaterfoxOnboardingActions = {
   setLayout,
   setTabLocation,
   setUiDensity,
-  keepPrivacyDefaults,
-  useBuiltInBlocker,
-  keepAdblockExtension,
-  setDefaultSearchQwant,
+  setDefaultSearchDuckDuckGo,
 };
