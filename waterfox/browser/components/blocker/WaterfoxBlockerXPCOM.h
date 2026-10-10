@@ -5,9 +5,6 @@
 #ifndef waterfox_blocker_xpcom_h
 #define waterfox_blocker_xpcom_h
 
-#include "mozilla/ContentClassifierEngine.h"
-#include "mozilla/ContentClassifierService.h"
-#include "mozilla/RefPtr.h"
 #include "nsCOMPtr.h"
 #include "nsIContentPolicy.h"
 #include "nsISupportsImpl.h"
@@ -21,20 +18,12 @@ class WaterfoxBlockerRequest final : public nsIWaterfoxBlockerRequest {
   NS_DECL_THREADSAFE_ISUPPORTS
   NS_DECL_NSIWATERFOXBLOCKERREQUEST
 
-  WaterfoxBlockerRequest(RefPtr<mozilla::ContentClassifierService> aService,
-                         mozilla::AdBlockingRequestSnapshot aRequest)
-      : mService(std::move(aService)), mRequest(std::move(aRequest)) {}
+  WaterfoxBlockerRequest() = default;
 
  private:
   ~WaterfoxBlockerRequest() = default;
-  const RefPtr<mozilla::ContentClassifierService> mService;
-  const mozilla::AdBlockingRequestSnapshot mRequest;
 };
 
-/**
- * Content policy that checks every resource load against the blocker,
- * including loads served from internal caches, using the shared native policy.
- */
 class WaterfoxBlockerContentPolicy final : public nsIContentPolicy {
  public:
   NS_DECL_ISUPPORTS
@@ -46,10 +35,6 @@ class WaterfoxBlockerContentPolicy final : public nsIContentPolicy {
   ~WaterfoxBlockerContentPolicy();
 };
 
-/**
- * Implements nsIWaterfoxBlockerEngine through the shared native engine,
- * bridging JS callers and the Rust adblock engine.
- */
 class WaterfoxBlockerXPCOM final : public nsIWaterfoxBlockerEngine {
  public:
   NS_DECL_ISUPPORTS
@@ -59,12 +44,6 @@ class WaterfoxBlockerXPCOM final : public nsIWaterfoxBlockerEngine {
 
  private:
   ~WaterfoxBlockerXPCOM();
-
-  nsresult Capture(mozilla::AdBlockingRequestSnapshot aRequest,
-                   nsIWaterfoxBlockerRequest** aResult);
-
-  RefPtr<mozilla::ContentClassifierEngine> mEngine;
-  uint64_t mPublishedGeneration = 0;
 };
 
 #endif  // waterfox_blocker_xpcom_h
