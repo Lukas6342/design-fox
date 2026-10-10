@@ -7,13 +7,13 @@
 pref("browser.search.serpEventTelemetryCategorization.enabled", false, locked);
 
 // The blocker built into the browser.
-pref("waterfox.blocker.enabled", true);
+pref("waterfox.blocker.enabled", false);
 // Show ad blocking controls in Settings.
-pref("waterfox.blocker.ui.enabled", true);
+pref("waterfox.blocker.ui.enabled", false);
 // Show the blocked count badge on the blocker toolbar button.
-pref("waterfox.blocker.showBadge", true);
+pref("waterfox.blocker.showBadge", false);
 // Allow ads on configured Waterfox search partner domains.
-pref("waterfox.blocker.allowSearchPartnerAds", true);
+pref("waterfox.blocker.allowSearchPartnerAds", false);
 // Additional custom filter list URLs as a JSON array string.
 pref("waterfox.blocker.filterListUrls", "[]");
 // Per list enabled overrides as a JSON object mapping list IDs to booleans.
@@ -26,7 +26,7 @@ pref("waterfox.blocker.dismissedExtensionInstallWarnings", "[]");
 pref("waterfox.blocker.coexist", false);
 // Fetch uBO scriptlets and supplementary resources from Waterfox AUS at
 // runtime. When false, the engine uses only the copies bundled in the build.
-pref("waterfox.blocker.remoteResourcesEnabled", true);
+pref("waterfox.blocker.remoteResourcesEnabled", false);
 
 // Tracking protection and fingerprinting.
 pref("privacy.trackingprotection.lower_network_priority", true);
@@ -55,8 +55,8 @@ pref("network.http.referer.defaultPolicy.trackers.pbmode", 1);
 pref("browser.urlbar.trimURLs", false);
 
 // Forms and documents.
-pref("editor.truncate_user_pastes", false);
-pref("pdfjs.enableScripting", false);
+// pref("editor.truncate_user_pastes", false);
+// pref("pdfjs.enableScripting", false);
 
 // Extension installs are not limited to signed or Mozilla approved ones.
 pref("xpinstall.signatures.required", false, locked);
